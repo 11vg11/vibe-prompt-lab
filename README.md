@@ -1,82 +1,71 @@
-# Vibe Prompt Lab
+# 🍏 macOS Weather App
 
-Vibe Prompt Lab is a practical repository for exploring vibe coding, prompt engineering, and AI-assisted software development workflows.
+> A fast, fluid, and beautifully designed weather application styled after the macOS Weather widget design system, built as a project for **Vibe Coding** practice! 🌊✨
 
-The purpose of this project is to collect useful prompts, test AI-assisted coding techniques, document experiments, and improve the way developers work with AI tools.
+[![Vibe Coding](https://img.shields.io/badge/Coding_Style-Vibe_Coding-ff69b4?style=for-the-badge&logo=visual-studio-code)](https://github.com)
+[![Platform](https://img.shields.io/badge/Platform-Web_/_macOS_Style-1f2937?style=for-the-badge&logo=apple)](https://github.com)
+[![Backend](https://img.shields.io/badge/Backend-Express.js-000000?style=for-the-badge&logo=express)](https://expressjs.com)
+[![API](https://img.shields.io/badge/Weather_API-Open--Meteo-4fa2ff?style=for-the-badge)](https://open-meteo.com/)
 
-## About the Project
+---
 
-This repository focuses on:
+## 🌊 Vibe Coding Disclaimer
 
-* Vibe coding experiments
-* Prompt engineering techniques
-* AI-assisted coding workflows
-* Reusable prompts for developers
-* Code generation and improvement examples
-* Notes about working effectively with AI tools
+This project is an **example built purely for practice**. The code was crafted in a relaxed "vibe coding" state—focusing on fluid aesthetics, satisfying micro-animations, glassmorphism, and instant feedback. It demonstrates integration of local storage, API proxies, dynamic rendering, and native Web technologies.
 
-## What is Vibe Coding?
+---
 
-Vibe coding is an approach to software development where developers use AI tools to help generate, improve, debug, and explain code.
+## ✨ Features
 
-The developer still controls the idea, structure, logic, and final decisions, while AI supports the implementation process.
+- **🍏 macOS Glassmorphic Design**: Clean blur effects (`backdrop-filter`), thin borders, traffic light window controls, and standard macOS layouts.
+- **🌈 Dynamic Gradients**: Visual themes (gradients) change smoothly based on the current weather condition and local day/night status of the selected location.
+- **🔍 Fast City Search**: Live search geocoding proxy powered by the Open-Meteo Geocoding API.
+- **📈 macOS-Style Temperature Bars**: The 10-day forecast displays temperature range bars showing the relative range of min/max temperatures, with current temperature dots (just like native macOS).
+- **☀️ Interactive Solar Arc**: Visualizes sunrise/sunset progress with a smooth quadratic Bezier curve indicating the exact height of the sun based on local time.
+- **🧭 Compass Wind Widget**: Live wind speed representation with a rotating compass needle.
+- **💾 LocalStorage Caching**: Remembers your saved locations list so they load instantly on repeat visits.
 
-## What is Prompt Engineering?
+---
 
-Prompt engineering is the practice of writing clear and effective instructions for AI systems.
+## 🛠️ Tech Stack
 
-Good prompts can help AI tools produce better code, explain technical concepts, find bugs, write documentation, and suggest improvements.
+- **Backend**: Node.js & Express (provides endpoints to avoid CORS limits and proxy weather forecasts).
+- **Frontend**: Pure HTML5, CSS3 Custom Properties (variables), and Vanilla JavaScript (ES modules).
+- **API**: Open-Meteo (Zero setup, high-fidelity data, completely free, no API keys required!).
 
-## Repository Structure
+---
 
-```text
-vibe-prompt-lab/
-│
-├── prompts/
-│   └── useful-prompts.md
-│
-├── examples/
-│   └── code-examples.md
-│
-├── notes/
-│   └── learning-notes.md
-│
-└── README.md
-```
+## 🚀 Getting Started
 
-## Use Cases
+### Prerequisites
 
-This repository can be used to:
+Make sure you have [Node.js](https://nodejs.org/) installed (version 18+ recommended for native fetch support).
 
-* Practice writing effective prompts
-* Save useful development prompts
-* Test AI-generated code
-* Document coding experiments
-* Learn AI-assisted development workflows
-* Improve productivity with AI tools
+### Installation
 
-## Example Prompt
+1. Clone or copy this repository directory:
+   ```bash
+   cd Weather_app
+   ```
 
-```text
-Act as a senior backend developer.
-Review my code, identify possible bugs, explain the issues clearly,
-and suggest a cleaner and more scalable solution.
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Goals
+3. Launch the development server:
+   ```bash
+   npm run dev
+   ```
+   *(Alternatively, run `npm start`)*
 
-The main goals of this repository are:
+4. Open your browser and navigate to:
+   **[http://localhost:3000](http://localhost:3000)**
 
-* Improve prompt engineering skills
-* Learn how to use AI tools effectively
-* Build better coding habits
-* Create reusable prompts for software development
-* Explore practical AI-assisted programming techniques
+---
 
-## Contributions
+## 🎨 Aesthetic Customizations
 
-This repository is mainly for learning and experimentation. Suggestions, improvements, and useful prompts are welcome.
-
-## License
-
-This project is open-source and available for educational and learning purposes.
+- The layout is optimized to look like a desktop application.
+- The fonts load Google's `Inter` typeface for maximum clarity, falling back to system-ui fonts (like SF Pro on macOS).
+- Animations run with hardware-accelerated CSS `transform` and `opacity` properties.

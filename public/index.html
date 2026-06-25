@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather - macOS</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Modern dashboard window container -->
+  <div class="window">
+    <!-- Dashboard Header -->
+    <div class="window-header">
+      <div class="header-left">
+        <button id="sidebar-toggle" class="header-btn" title="Toggle Sidebar">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="app-title">Skyline Weather</div>
+      </div>
+      
+      <div class="header-right">
+        <button id="theme-indicator" class="header-btn" title="Current weather theme">
+          <span class="theme-dot"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="window-body">
+      <!-- Sidebar (Left Pane) -->
+      <aside class="sidebar" id="sidebar">
+        <!-- Search bar -->
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="city-search" placeholder="Search for a city..." autocomplete="off">
+            <button id="search-clear-btn" class="clear-btn" style="display: none;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <!-- Search results list -->
+          <div id="search-results" class="search-results-dropdown" style="display: none;"></div>
+        </div>
+
+        <!-- Saved Locations list -->
+        <div class="saved-cities-list" id="saved-cities-list">
+          <!-- Dynamic contents loaded by JS -->
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="vibe-coding-badge">
+            <span class="badge-pulse"></span>
+            <span>Vibe Coding Practice</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Panel (Right Pane) -->
+      <main class="main-content" id="main-content">
+        <!-- Loader / Welcome state -->
+        <div id="welcome-loader" class="loader-container">
+          <div class="spinner"></div>
+          <p>Fetching weather data...</p>
+        </div>
+
+        <!-- Shimmering Skeleton Loader (shown during fetches) -->
+        <div id="weather-skeleton" class="skeleton-layout" style="display: none;">
+          <!-- Title block -->
+          <div class="overview-section" style="margin-top: 10px; margin-bottom: 28px;">
+            <div class="skeleton skeleton-text title"></div>
+            <div class="skeleton skeleton-text temp"></div>
+            <div class="skeleton skeleton-text subtitle"></div>
+          </div>
+          
+          <!-- Hourly card skeleton -->
+          <div class="dashboard-card" style="height: 180px; margin-bottom: 16px;">
+            <div class="skeleton skeleton-text" style="width: 120px; height: 10px; margin-bottom: 16px;"></div>
+            <div class="skeleton-hourly-row">
+              <div class="skeleton skeleton-hourly-item"></div>
+              <div class="skeleton skeleton-hourly-item"></div>
+              <div class="skeleton skeleton-hourly-item"></div>
+              <div class="skeleton skeleton-hourly-item"></div>
+              <div class="skeleton skeleton-hourly-item"></div>
+              <div class="skeleton skeleton-hourly-item"></div>
+              <div class="skeleton skeleton-hourly-item"></div>
+              <div class="skeleton skeleton-hourly-item"></div>
+            </div>
+          </div>
+          
+          <!-- Grid skeleton -->
+          <div class="dashboard-grid">
+            <div class="dashboard-card" style="height: 296px; margin-bottom: 0;">
+              <div class="skeleton skeleton-text" style="width: 120px; height: 10px; margin-bottom: 20px;"></div>
+              <div class="skeleton-daily-row">
+                <div class="skeleton skeleton-daily-line"></div>
+                <div class="skeleton skeleton-daily-line"></div>
+                <div class="skeleton skeleton-daily-line"></div>
+                <div class="skeleton skeleton-daily-line"></div>
+                <div class="skeleton skeleton-daily-line"></div>
+                <div class="skeleton skeleton-daily-line"></div>
+              </div>
+            </div>
+            
+            <div class="skeleton-widget-grid">
+              <div class="skeleton skeleton-widget"></div>
+              <div class="skeleton skeleton-widget"></div>
+              <div class="skeleton skeleton-widget"></div>
+              <div class="skeleton skeleton-widget"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dedicated Empty State Container (Prevents DOM Destruction) -->
+        <div id="empty-state" class="loader-container" style="display: none;">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <p style="color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500; margin-top: 12px;">No saved cities. Search and select a city to begin!</p>
+        </div>
+
+        <!-- Main weather dashboard (hidden until loaded) -->
+        <div id="weather-dashboard" style="display: none;">
+          
+          <!-- Top Info Overview -->
+          <section class="overview-section">
+            <h1 id="weather-city">Cupertino</h1>
+            <div class="temp-condition">
+              <span id="weather-temp">72°</span>
+              <div class="condition-description">
+                <span id="weather-desc">Sunny</span>
+                <span id="weather-high-low">H:75°  L:55°</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Hourly Forecast Card (Upgraded with Temp Trend Chart) -->
+          <section class="dashboard-card hourly-forecast-card">
+            <h3 class="card-title">
+              <svg class="title-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              HOURLY TEMPERATURE TREND & FORECAST
+            </h3>
+            
+            <div class="temp-trend-chart-container">
+              <svg id="temp-trend-chart" viewBox="0 0 800 90" preserveAspectRatio="none">
+                <!-- SVG path, gridlines, points and temperature labels will be injected dynamically -->
+              </svg>
+            </div>
+            
+            <div class="hourly-list" id="hourly-list">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </section>
+
+          <!-- 2-Column Grid for Weekly & Widgets -->
+          <div class="dashboard-grid">
+            
+            <!-- 10-Day Forecast Card -->
+            <section class="dashboard-card daily-forecast-card">
+              <h3 class="card-title">
+                <svg class="title-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                10-DAY FORECAST
+              </h3>
+              <div class="daily-list" id="daily-list">
+                <!-- Rendered via JavaScript -->
+              </div>
+            </section>
+
+            <!-- Grid of 2x2 Widgets -->
+            <div class="widgets-subgrid">
+              
+              <!-- UV Index Widget -->
+              <div class="dashboard-card widget-card uv-widget">
+                <h4 class="widget-title">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                  UV INDEX
+                </h4>
+                <div class="widget-value" id="uv-value">3</div>
+                <div class="widget-desc" id="uv-desc">Moderate</div>
+                <div class="slider-bar-wrapper">
+                  <div class="slider-bar uv-bar">
+                    <span class="slider-dot" id="uv-indicator" style="left: 30%;"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Wind Widget -->
+              <div class="dashboard-card widget-card wind-widget">
+                <h4 class="widget-title">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>
+                  WIND
+                </h4>
+                <div class="wind-display">
+                  <div class="wind-dial-container">
+                    <div class="compass-circle">
+                      <span class="compass-marker north">N</span>
+                      <span class="compass-marker east">E</span>
+                      <span class="compass-marker south">S</span>
+                      <span class="compass-marker west">W</span>
+                      <div class="compass-needle" id="wind-needle"></div>
+                    </div>
+                  </div>
+                  <div class="wind-text-info">
+                    <div class="widget-value font-compact" id="wind-value">12 <span class="unit">km/h</span></div>
+                    <div class="widget-desc" id="wind-dir-desc">NW</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sunrise/Sunset Widget -->
+              <div class="dashboard-card widget-card sun-widget">
+                <h4 class="widget-title">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 18a5 5 0 0 0-10 0"></path><line x1="12" y1="9" x2="12" y2="2"></line><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line><line x1="1" y1="18" x2="3" y2="18"></line><line x1="21" y1="18" x2="23" y2="18"></line><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line><line x1="23" y1="22" x2="1" y2="22"></line><polyline points="8 6 12 2 16 6"></polyline></svg>
+                  SUNRISE & SUNSET
+                </h4>
+                <div class="sun-arc-container">
+                  <svg class="sun-arc-svg" viewBox="0 0 100 50">
+                    <!-- Sun path arc -->
+                    <path d="M5,45 Q50,5 95,45" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="2,2"/>
+                    <path id="sun-progress-arc" d="M5,45 Q50,5 95,45" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-dasharray="140" stroke-dashoffset="140"/>
+                    <circle id="sun-indicator-dot" cx="5" cy="45" r="4" fill="#f5af19" filter="drop-shadow(0 0 4px #f5af19)"/>
+                    <line x1="0" y1="45" x2="100" y2="45" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                  </svg>
+                  <div class="sun-times-row">
+                    <div class="sun-time-block">
+                      <span class="sun-label">Sunrise</span>
+                      <span class="sun-value" id="sunrise-time">6:12 AM</span>
+                    </div>
+                    <div class="sun-time-block align-right">
+                      <span class="sun-label">Sunset</span>
+                      <span class="sun-value" id="sunset-time">8:34 PM</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Humidity & Apparent Temp Widget -->
+              <div class="dashboard-card widget-card humidity-widget">
+                <h4 class="widget-title">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                  HUMIDITY & FEELS LIKE
+                </h4>
+                <div class="humidity-grid">
+                  <div>
+                    <div class="widget-value" id="humidity-value">64%</div>
+                    <div class="widget-desc" id="humidity-desc">The dew point is 52° right now.</div>
+                  </div>
+                  <div class="separator-v"></div>
+                  <div>
+                    <div class="widget-value" id="feels-like-value">71°</div>
+                    <div class="widget-desc">Similar to the actual temperature.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
